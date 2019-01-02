@@ -1,8 +1,22 @@
-void drawDevText() {
-  text("camera: " + camX + ", " + camY,50,50);
-  text("FPS: " + frameRate,50,65);
-  text("toBlockX(mouseX) = " + toBlockX(mouseX),50,80);
-  text("toBlockY(mouseY) = " + toBlockY(mouseY),50,95);
+//Constants
+/**/static final int WORLD_WIDTH = 1000;
+/**/static final int SURFACE_HEIGHT = 1000;
+/**/static final int TERRAIN_HEIGHT = 16;
+/**/static final int SKY_HEIGHT = 200;
+/**/static final int WORLD_HEIGHT = SURFACE_HEIGHT + TERRAIN_HEIGHT + SKY_HEIGHT;
+/**/static final int SCL = 16;
+/**/static final float TERRAIN_INTENSITY = 0.05;
+/**/static final byte AIR = 0, DIRT = 1;
+/**/color sky_color = color(127,218,255);
+byte[][] world;
+
+
+void drawSky() {
+  background(sky_color);
+}
+
+void allocateWorld() {
+  world = new byte[WORLD_WIDTH][WORLD_HEIGHT];
 }
 
 void mine() {
@@ -29,15 +43,9 @@ void drawBlocks() {
   int startX = max(floor(camX - width/(2*SCL) - 1),0);
   int endX = min(ceil(camX + width/(2*SCL)),world.length - 1);
   int startY = max(floor(camY - height/(2*SCL)) - 1,0);
-  int endY = min(ceil(camY + height/(2*SCL)),world[0].length - 1);
+  int endY = min(ceil(camY + height/(2*SCL)) + 1,world[0].length - 1);
   for (int x = startX; x <= endX; x++)
   for (int y = startY; y < endY; y++)
   if (world[x][y] == DIRT)
   image(dirtImg,toScreenX(x),toScreenY(y));
 }
-
-boolean inRange(float n, float min, float max) { return (n >= min && n < max); }
-float toScreenX(int x) { return SCL*(x - camX) + width/2; }
-float toScreenY(int y) { return height/2 - SCL*(y + 1 - camY); }
-int toBlockX(float x) { return floor((x - width/2)/(SCL) + camX); }
-int toBlockY(float y) { return floor((y-height/2)/-SCL +camY); }
