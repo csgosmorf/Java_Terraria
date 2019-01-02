@@ -51,30 +51,40 @@ class Player {
   
   void fixPlayerCollisions() {
     if (vel.x < 0) {
-      for (int i = -1; i <= 1; i++)
-        if (world[(int)(pos.x)][(int)(pos.y + i)] != 0) 
-          pos.x = (int)pos.x + 1;
       if (world[(int)(pos.x)][(int)(pos.y - 1.7)] != 0)
-        pos.x = (int)pos.x + 1;
+          pos.x = (int)pos.x + 1;
+      if (world[(int)(pos.x)][(int)(pos.y - 1)] != 0) 
+          pos.x = (int)pos.x + 1;
+      if (world[(int)(pos.x)][(int)(pos.y + 0)] != 0) 
+          pos.x = (int)pos.x + 1;
+      if (world[(int)(pos.x)][(int)(pos.y + 0.85)] != 0) 
+          pos.x = (int)pos.x + 1;
     }
     else if (vel.x > 0) {
-      for (int i = -1; i <= 1; i++)
-        if (world[(int)(pos.x + 1.5)][(int)(pos.y + i)] != 0) 
-          pos.x = (int)pos.x + 0.5;
       if (world[(int)(pos.x + 1.5)][(int)(pos.y - 1.7)] != 0)
+          pos.x = (int)pos.x + 0.5;
+      if (world[(int)(pos.x + 1.5)][(int)(pos.y - 1)] != 0) 
+          pos.x = (int)pos.x + 0.5;
+      if (world[(int)(pos.x + 1.5)][(int)(pos.y + 0)] != 0) 
+          pos.x = (int)pos.x + 0.5;
+      if (world[(int)(pos.x + 1.5)][(int)(pos.y + 0.85)] != 0) 
           pos.x = (int)pos.x + 0.5;
     }
     
     if (vel.y < 0) {
       if (world[(int)(pos.x)][(int)(pos.y - 1.8)] != 0)
         pos.y = (int)pos.y + 0.8;
-      if (world[(int)(pos.x + 1.5)][(int)(pos.y - 1.8)] != 0)
+      if (world[(int)(pos.x + 1)][(int)(pos.y - 1.8)] != 0)
+        pos.y = (int)pos.y + 0.8;
+      if (world[(int)(pos.x + 1.4)][(int)(pos.y - 1.8)] != 0)
         pos.y = (int)pos.y + 0.8;
     }
     else if (vel.y > 0) {
       if (world[(int)(pos.x)][(int)(pos.y + 1)] != 0) 
           pos.y = (int)pos.y;
-      if (world[(int)(pos.x + 1.5)][(int)(pos.y + 1)] != 0) 
+      if (world[(int)(pos.x + 1)][(int)(pos.y + 1)] != 0) 
+          pos.y = (int)pos.y;
+      if (world[(int)(pos.x + 1.4)][(int)(pos.y + 1)] != 0) 
           pos.y = (int)pos.y;
     }
   }
