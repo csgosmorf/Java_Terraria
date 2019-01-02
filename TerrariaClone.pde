@@ -2,6 +2,7 @@
 
 void setup() {
   fullScreen();
+  frameRate(144);
   allocateWorld();
   generateDirt();
   loadImages();
@@ -9,8 +10,10 @@ void setup() {
 
 void draw() {
   drawSky();
-  moveCamera();
-  mine();
+  player.update();
+  player.mine();
+  player.place();
   drawBlocks();
+  player.display();
   drawDevText();
 }
