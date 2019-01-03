@@ -1,6 +1,7 @@
 Player player = new Player(WORLD_WIDTH / 2.0, SURFACE_HEIGHT + TERRAIN_HEIGHT);
 float[] xCollideOffsets = {0.0,1.0,1.3};
 float[] yCollideOffsets = {-1.6,-1.0,0.0,0.75};
+float totalIterateTime = 0.0;
 
 class Player {
   PVector pos;
@@ -14,16 +15,49 @@ class Player {
   }
   
   void update() {
-    if (KEY_A) vel.x = -0.15;
-    if (KEY_D) vel.x = 0.15;
-    if (KEY_W) vel.y += 0.15;
-    if (KEY_S) vel.y -= 0.15;
-    pos.add(vel);
-    keepPlayerInWorld();
-    fixPlayerCollisions();
+    if (KEY_A) vel.x = -0.5;
+    if (KEY_D) vel.x = 0.5;
+    if (KEY_W) vel.y = 0.5;
+    if (KEY_S) vel.y = -0.5;
+    
+    iterativeCollideFixX();
+    iterativeCollideFixY();
+    
     setCamera(pos.x + 0.75,pos.y + 1 - 1.4);
     limitCamToWorld();
     vel.set(0,0);
+  }
+  
+  //Does as many steps as needed to add vel to pos without collision mistake
+  void iterativeCollideFixX() {
+    boolean hitX = false;
+    int numAdds = (int)(abs(vel.x) / 0.15);
+    for (int i = 0; i < numAdds; i++) {
+      pos.x += (vel.x > 0 ? 0.15: -0.15);
+      keepPlayerInWorldX();
+      hitX = fixCollisionX() || hitX;
+    }
+    float remainder = abs(vel.x) - numAdds * 0.15;
+    pos.x += vel.x > 0 ? remainder: -remainder;
+    keepPlayerInWorldX();
+    hitX = fixCollisionX() || hitX;
+    if (hitX) vel.x = 0;
+  }
+  
+  //Does as many steps as needed to add vel to pos without collision mistake
+  void iterativeCollideFixY() {
+    boolean hitY = false;
+    int numAdds = (int)(abs(vel.y) / 0.15);
+    for (int i = 0; i < numAdds; i++) {
+      pos.y += (vel.y > 0 ? 0.15: -0.15);
+      keepPlayerInWorldY();
+      hitY = fixCollisionY() || hitY;
+    }
+    float remainder = abs(vel.y) - numAdds * 0.15;
+    pos.y += vel.y > 0 ? remainder: -remainder;
+    keepPlayerInWorldY();
+    hitY = fixCollisionY() || hitY;
+    if (hitY) vel.y = 0;
   }
   
   void display() {
@@ -51,66 +85,69 @@ class Player {
       world[blockX][blockY] = 1;
   }
   
-  void fixPlayerCollisions() {
-    if (vel.x < 0) {
+  //Returns true if collision occurs in X dir
+  boolean fixCollisionX() {
+      boolean hitX = false;
       for (int i = 0; i < 4; i++) {
         int row = (int)(pos.x);
         int col = (int)(pos.y + yCollideOffsets[i]);
         if (inWorld(row,col)) {
           if (world[row][col] != 0) {
             pos.x = (int)pos.x + 1;
-            vel.x = 0;
+            hitX = true;
           }
         }
       }
-    }
-    else if (vel.x > 0) {
       for (int i = 0; i < 4; i++) {
         int row = (int)(pos.x + 1.5);
         int col = (int)(pos.y + yCollideOffsets[i]);
         if (inWorld(row,col)) {
           if (world[row][col] != 0) {
             pos.x = (int)pos.x + 0.5;
-            vel.x = 0;
+            hitX = true;
           }
         }
       }
-    }
-    if (vel.y < 0) {
+      return hitX;
+  }
+  
+  //Returns true if collision occurs in X dir
+  boolean fixCollisionY() {
+      boolean hitY = false;
       for (int i = 0; i < 3; i++) {
         int row = (int)(pos.x + xCollideOffsets[i]);
         int col = (int)(pos.y - 1.8);
         if (inWorld(row,col)) {
           if (world[row][col] != 0) {
             pos.y = (int)pos.y + 0.8;
-            vel.y = 0;
+            hitY = true;
           }
         }
       }
-    }
-    else if (vel.y > 0) {
       for (int i = 0; i < 3; i++) {
         int row = (int)(pos.x + xCollideOffsets[i]);
         int col = (int)(pos.y + 1);
         if (inWorld(row,col)) {
           if (world[row][col] != 0) {
             pos.y = (int)pos.y;
-            vel.y = 0;
+            hitY = true;
           }
         }
       }
-    }
+      return hitY;
   }
   
-  void keepPlayerInWorld() {
+  void keepPlayerInWorldX() {
     if (pos.x < 0) {
       pos.x = 0;
     } else if (pos.x > world.length - 1.5) {
       pos.x = world.length - 1.5;
     }
-    
-    if (pos.y < 1.8) {
-      pos.y = 1.8;
+  }
+  
+  void keepPlayerInWorldY() {
+    if (pos.y - 2.8 < 0) {
+      pos.y = 0;
     } else if (pos.y > world[0].length - 2) {
       pos.y = world[0].length - 2;
     }

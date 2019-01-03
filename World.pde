@@ -1,5 +1,5 @@
 //Constants
-/**/static final int WORLD_WIDTH = 200;
+/**/static final int WORLD_WIDTH = 500;
 /**/static final int SURFACE_HEIGHT = 40;
 /**/static final int TERRAIN_HEIGHT = 16;
 /**/static final int SKY_HEIGHT = 100;
