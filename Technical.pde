@@ -9,7 +9,7 @@ void setCamera(float x, float y) {
 }
 
 void loadImages() {
-  dirtImg = loadImage("images/textures/0.png", "png");
+  dirtImg = loadImage("data/images/textures/0.png", "png");
   dirtImg.resize(SCL,SCL);
 }
 
