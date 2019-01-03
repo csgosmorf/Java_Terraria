@@ -15,17 +15,30 @@ class Player {
   }
   
   void update() {
-    if (KEY_A) vel.x = -0.5;
-    if (KEY_D) vel.x = 0.5;
-    if (KEY_W) vel.y = 0.5;
-    if (KEY_S) vel.y = -0.5;
+    acc.add(GRAVITY);
+    if (KEY_SPACE) {
+      acc.y += 0.5;
+      KEY_SPACE = false;
+    }
+    if (KEY_A) {
+      acc.x -= 0.08;
+    }
+    if (KEY_D) {
+      acc.x += 0.08;
+    }
+    vel.add(acc);
+    
+    vel.x = constrain(vel.x,-0.5,0.5);
+    float frictionX = -vel.x * 0.2;
+    vel.x += frictionX;
+    vel.y = constrain(vel.y,-1,1);
     
     iterativeCollideFixX();
     iterativeCollideFixY();
     
     setCamera(pos.x + 0.75,pos.y + 1 - 1.4);
     limitCamToWorld();
-    vel.set(0,0);
+    acc.set(0,0);
   }
   
   //Does as many steps as needed to add vel to pos without collision mistake
