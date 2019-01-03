@@ -28,12 +28,18 @@ void generateDirt() {
 }
 
 void drawBlocks() {
+  noFill();
+  stroke(0);
   int startX = max(floor(camX - width/(2*SCL) - 1),0);
   int endX = min(ceil(camX + width/(2*SCL)),world.length - 1);
   int startY = max(floor(camY - height/(2*SCL)) - 1,0);
   int endY = min(ceil(camY + height/(2*SCL)) + 1,world[0].length - 1);
-  for (int x = startX; x <= endX; x++)
-  for (int y = startY; y < endY; y++)
-  if (world[x][y] == DIRT)
-  image(dirtImg,toScreenX(x),toScreenY(y));
+  for (int x = startX; x <= endX; x++) {
+    float screenX = toScreenX(x);
+    for (int y = startY; y < endY; y++) {
+      if (world[x][y] == DIRT) {
+        image(dirtImg,screenX,toScreenY(y));
+      }
+    }
+  }
 }

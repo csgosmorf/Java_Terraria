@@ -1,6 +1,6 @@
 Player player = new Player(WORLD_WIDTH / 2.0, SURFACE_HEIGHT + TERRAIN_HEIGHT);
-float[] xCollideOffsets = {0.0,1.0,1.4};
-float[] yCollideOffsets = {-1.7,-1.0,0.0,0.85};
+float[] xCollideOffsets = {0.0,1.0,1.3};
+float[] yCollideOffsets = {-1.6,-1.0,0.0,0.75};
 
 class Player {
   PVector pos;
@@ -14,15 +14,14 @@ class Player {
   }
   
   void update() {
-    if (KEY_A) vel.x = -0.1;
-    if (KEY_D) vel.x = 0.1;
-    if (KEY_W) vel.y = 0.1;
-    if (KEY_S) vel.y = -0.1;
+    if (KEY_A) vel.x = -0.15;
+    if (KEY_D) vel.x = 0.15;
+    if (KEY_W) vel.y += 0.15;
+    if (KEY_S) vel.y -= 0.15;
     pos.add(vel);
     keepPlayerInWorld();
     fixPlayerCollisions();
     setCamera(pos.x + 0.75,pos.y + 1 - 1.4);
-    //setCamera(max(width/(2*SCL),camX),camY);
     vel.set(0,0);
   }
   
@@ -30,7 +29,6 @@ class Player {
     noFill();
     strokeWeight(2);
     stroke(120,150,0);
-    //rectMode(CENTER);
     rect(toScreenX(pos.x),toScreenY(pos.y),SCL*1.5 , SCL * 2.8);
     fill(255,0,0);
     ellipse(width/2,height/2,5,5);
@@ -58,8 +56,10 @@ class Player {
         int row = (int)(pos.x);
         int col = (int)(pos.y + yCollideOffsets[i]);
         if (inWorld(row,col)) {
-          if (world[row][col] != 0)
+          if (world[row][col] != 0) {
             pos.x = (int)pos.x + 1;
+            vel.x = 0;
+          }
         }
       }
     }
@@ -68,8 +68,10 @@ class Player {
         int row = (int)(pos.x + 1.5);
         int col = (int)(pos.y + yCollideOffsets[i]);
         if (inWorld(row,col)) {
-          if (world[row][col] != 0)
+          if (world[row][col] != 0) {
             pos.x = (int)pos.x + 0.5;
+            vel.x = 0;
+          }
         }
       }
     }
@@ -78,8 +80,10 @@ class Player {
         int row = (int)(pos.x + xCollideOffsets[i]);
         int col = (int)(pos.y - 1.8);
         if (inWorld(row,col)) {
-          if (world[row][col] != 0)
+          if (world[row][col] != 0) {
             pos.y = (int)pos.y + 0.8;
+            vel.y = 0;
+          }
         }
       }
     }
@@ -88,8 +92,10 @@ class Player {
         int row = (int)(pos.x + xCollideOffsets[i]);
         int col = (int)(pos.y + 1);
         if (inWorld(row,col)) {
-          if (world[row][col] != 0)
+          if (world[row][col] != 0) {
             pos.y = (int)pos.y;
+            vel.y = 0;
+          }
         }
       }
     }
