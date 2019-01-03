@@ -19,7 +19,7 @@ class Player {
   
   void update() {
     acc.add(GRAVITY);
-    if (KEY_SPACE) {
+    if (KEY_SPACE && onGround()) {
       acc.y += 0.7;
       KEY_SPACE = false;
     }
@@ -36,7 +36,7 @@ class Player {
     }
     vel.add(acc);
     
-    vel.x = constrain(vel.x,-0.5,0.5);
+    vel.x = constrain(vel.x,-0.3,0.3);
     vel.y = constrain(vel.y,-0.6,0.6);
     
     iterativeCollideFixX();
