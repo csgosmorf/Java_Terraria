@@ -42,6 +42,9 @@ void drawDevText() {
   text("toBlockY(mouseY) = " + toBlockY(mouseY),50,95);
   text("playerPosX = " + player.pos.x,50,110);
   text("playerPosY = " + player.pos.y,50,125);
+  text("playerVelX = " + player.vel.x,50,140);
+  text("playerVelY = " + player.vel.y,50,155);
+  text("onGround = " + player.onGround(),50,170);
 }
 boolean inWorld(int x, int y) {
   return inRange(x,0,WORLD_WIDTH) && inRange(y,0,WORLD_HEIGHT);

@@ -7,6 +7,7 @@ class Player {
   PVector pos;
   PVector vel;
   PVector acc;
+  boolean onGround = false;
   
   Player(float x, float y) {
     pos = new PVector(x,y);
@@ -17,7 +18,7 @@ class Player {
   void update() {
     acc.add(GRAVITY);
     if (KEY_SPACE) {
-      acc.y += 0.5;
+      acc.y += 0.7;
       KEY_SPACE = false;
     }
     if (KEY_A) {
@@ -31,7 +32,7 @@ class Player {
     vel.x = constrain(vel.x,-0.5,0.5);
     float frictionX = -vel.x * 0.2;
     vel.x += frictionX;
-    vel.y = constrain(vel.y,-1,1);
+    vel.y = constrain(vel.y,-0.6,0.6);
     
     iterativeCollideFixX();
     iterativeCollideFixY();
@@ -39,6 +40,32 @@ class Player {
     setCamera(pos.x + 0.75,pos.y + 1 - 1.4);
     limitCamToWorld();
     acc.set(0,0);
+  }
+  
+  boolean onGround() {
+    int row = (int)(pos.x + 0);
+    int col = (int)(pos.y - 1.82);
+    if (inWorld(row,col)) {
+      if (world[row][col] != 0) {
+        return true;
+      }
+    }
+    
+    row = (int)(pos.x + 1);
+    col = (int)(pos.y - 1.82);
+    if (inWorld(row,col)) {
+      if (world[row][col] != 0) {
+        return true;
+      }
+    }
+    row = (int)(pos.x + 1.4);
+    col = (int)(pos.y - 1.82);
+    if (inWorld(row,col)) {
+      if (world[row][col] != 0) {
+        return true;
+      }
+    }
+    return false;
   }
   
   //Does as many steps as needed to add vel to pos without collision mistake
