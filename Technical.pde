@@ -8,6 +8,11 @@ void setCamera(float x, float y) {
   camY = y;
 }
 
+void limitCamToWorld() {
+  camX = constrain(camX,width/(2*SCL),WORLD_WIDTH - width/(2*SCL));
+  camY = constrain(camY,height/(2*SCL) + 1,WORLD_HEIGHT - 2 - height/(2*SCL));
+}
+
 void loadImages() {
   dirtImg = loadImage("data/images/textures/0.png", "png");
   dirtImg.resize(SCL,SCL);

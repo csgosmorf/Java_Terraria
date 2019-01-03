@@ -22,6 +22,7 @@ class Player {
     keepPlayerInWorld();
     fixPlayerCollisions();
     setCamera(pos.x + 0.75,pos.y + 1 - 1.4);
+    limitCamToWorld();
     vel.set(0,0);
   }
   
@@ -104,14 +105,14 @@ class Player {
   void keepPlayerInWorld() {
     if (pos.x < 0) {
       pos.x = 0;
-    } else if (pos.x > world.length - 1) {
-      pos.x = world.length - 1;
+    } else if (pos.x > world.length - 1.5) {
+      pos.x = world.length - 1.5;
     }
     
-    if (pos.y < 0) {
-      pos.y = 0;
-    } else if (pos.y > world[0].length - 1) {
-      pos.y = world[0].length - 1;
+    if (pos.y < 1.8) {
+      pos.y = 1.8;
+    } else if (pos.y > world[0].length - 2) {
+      pos.y = world[0].length - 2;
     }
   }
 }
