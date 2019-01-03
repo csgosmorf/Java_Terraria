@@ -8,6 +8,8 @@ class Player {
   PVector vel;
   PVector acc;
   boolean onGround = false;
+  char direction = 'R';
+  float walkingFrame = 0;
   
   Player(float x, float y) {
     pos = new PVector(x,y);
@@ -22,16 +24,19 @@ class Player {
       KEY_SPACE = false;
     }
     if (KEY_A) {
-      acc.x -= 0.08;
+      acc.x -= 0.06;
     }
     if (KEY_D) {
-      acc.x += 0.08;
+      acc.x += 0.06;
+    }
+    if (!KEY_D && !KEY_A) {
+      vel.x *= 0.9;
+      //float frictionX = -vel.x * 0.15;
+      //vel.x += frictionX;
     }
     vel.add(acc);
     
     vel.x = constrain(vel.x,-0.5,0.5);
-    float frictionX = -vel.x * 0.2;
-    vel.x += frictionX;
     vel.y = constrain(vel.y,-0.6,0.6);
     
     iterativeCollideFixX();
@@ -39,6 +44,7 @@ class Player {
     
     setCamera(pos.x + 0.75,pos.y + 1 - 1.4);
     limitCamToWorld();
+    if (abs(vel.x) < 0.05 && acc.x == 0) vel.x = 0;
     acc.set(0,0);
   }
   
@@ -101,12 +107,44 @@ class Player {
   }
   
   void display() {
-    noFill();
-    strokeWeight(2);
-    stroke(120,150,0);
-    rect(toScreenX(pos.x),toScreenY(pos.y),SCL*1.5 , SCL * 2.8);
-    fill(255,0,0);
-    ellipse(width/2,height/2,5,5);
+    //fill(255,0,0);
+    //ellipse(width/2,height/2,10,10);
+    imageMode(CENTER);
+    if (direction == 'L') {
+      if (!onGround()) {
+        image(jumping_left,toScreenX(pos.x) + SCL *0.75,toScreenY(pos.y) + SCL*1.4);
+      }
+      
+      else if (vel.x == 0) {
+        image(standing_left,toScreenX(pos.x) + SCL *0.75,toScreenY(pos.y) + SCL*1.4);
+        walkingFrame = 0;
+      }
+      else {
+        image(running_left[(int)walkingFrame],toScreenX(pos.x) + SCL *0.75,toScreenY(pos.y) + SCL*1.4);
+        walkingFrame+= max(abs(vel.x)*1.4,0.2);
+        if (walkingFrame >= 13) walkingFrame = 0;
+      }
+    } 
+    else {
+      if (!onGround()) {
+        image(jumping_right,toScreenX(pos.x) + SCL *0.75,toScreenY(pos.y) + SCL*1.4);
+      }
+      
+      else if (vel.x == 0) {
+        image(standing_right,toScreenX(pos.x) + SCL *0.75,toScreenY(pos.y) + SCL*1.4);
+        walkingFrame = 0;
+      }
+      else {
+        image(running_right[(int)walkingFrame],toScreenX(pos.x) + SCL *0.75,toScreenY(pos.y) + SCL*1.4);
+        walkingFrame+= max(abs(vel.x)*1.4,0.2);
+        if (walkingFrame >= 13) walkingFrame = 0;
+      }
+    }
+    //noFill();
+    //strokeWeight(2);
+    //stroke(120,150,0);
+    //rect(toScreenX(pos.x),toScreenY(pos.y),SCL*1.5 , SCL * 2.8);
+    //fill(255,0,0);
   }
   
   void mine() {

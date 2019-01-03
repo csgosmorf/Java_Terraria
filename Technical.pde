@@ -2,6 +2,13 @@ boolean KEY_W = false, KEY_A = false, KEY_S = false, KEY_D = false, KEY_SPACE = 
 float camX = WORLD_WIDTH / 2.0;
 float camY = SURFACE_HEIGHT + TERRAIN_HEIGHT;
 static PImage dirtImg;
+static PImage spriteSheet;
+static PImage standing_left;
+static PImage standing_right;
+static PImage jumping_left;
+static PImage jumping_right;
+static PImage[] running_right;
+static PImage[] running_left;
 
 void setCamera(float x, float y) {
   camX = x;
@@ -16,13 +23,54 @@ void limitCamToWorld() {
 void loadImages() {
   dirtImg = loadImage("data/images/textures/0.png", "png");
   dirtImg.resize(SCL,SCL);
+  
+  spriteSheet = loadImage("data/images/spriteSheet/char_sprite.png","png");
+  
+  standing_right = spriteSheet.get(4,12,32,42);
+  standing_left = mirrorOf(standing_right);
+  jumping_right = spriteSheet.get(4,292,32,42);
+  jumping_left = mirrorOf(jumping_right);
+  running_right = new PImage[14];
+  running_left = new PImage[14];
+  
+  for (int i = 0; i < 14; i++) {
+    running_right[i] = spriteSheet.get(4,346 + i * 56,32,44);
+    running_left[i] = mirrorOf(running_right[i]);
+  }
+  
+  standing_right.resize(round(SCL*1.5*(32.0/24)),round(SCL*2.8));
+  standing_left.resize(round(SCL*1.5*(32.0/24)),round(SCL*2.8));
+  jumping_right.resize(round(SCL*1.5*(32.0/24)),round(SCL*2.8));
+  jumping_left.resize(round(SCL*1.5*(32.0/24)),round(SCL*2.8));
+  for (int i = 0; i < 14; i++) {
+    running_left[i].resize(round(SCL*1.5*(32.0/24)),round(SCL*2.8*(44.0/42)));
+    running_right[i].resize(round(SCL*1.5*(32.0/24)),round(SCL*2.8*(44.0/42)));
+  }
+}
+
+
+
+PImage mirrorOf(PImage imgIn) {
+  int w = imgIn.width;
+  int h = imgIn.height;
+  PImage imgOut = createImage(w,h,ARGB);
+  for (int y = 0; y < h; y++)
+  for (int x = 0; x < w; x++)
+    imgOut.pixels[w*y + x] = imgIn.pixels[w*y + (w - 1) - x];
+  return imgOut;
 }
 
 void keyPressed() {
   if (key == 'w' || key == 'W') KEY_W = true;
-  else if (key == 'a' || key == 'A') KEY_A = true;
+  else if (key == 'a' || key == 'A') {
+    KEY_A = true;
+    player.direction = 'L';
+  }
   else if (key == 's' || key == 'S') KEY_S = true;
-  else if (key == 'd' || key == 'D') KEY_D = true;
+  else if (key == 'd' || key == 'D') {
+    KEY_D = true;
+    player.direction = 'R';
+  }
   else if (key == ' ') KEY_SPACE = true;
 }
 

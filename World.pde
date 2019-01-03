@@ -1,6 +1,6 @@
 //Constants
-/**/static final int WORLD_WIDTH = 1000;
-/**/static final int SURFACE_HEIGHT = 1000;
+/**/static final int WORLD_WIDTH = 10000;
+/**/static final int SURFACE_HEIGHT = 100;
 /**/static final int TERRAIN_HEIGHT = 16;
 /**/static final int SKY_HEIGHT = 300;
 /**/static final int WORLD_HEIGHT = SURFACE_HEIGHT + TERRAIN_HEIGHT + SKY_HEIGHT;
@@ -30,9 +30,10 @@ void generateDirt() {
 void drawBlocks() {
   noFill();
   stroke(0);
+  imageMode(CORNERS);
   int startX = max(floor(camX - width/(2*SCL) - 1),0);
   int endX = min(ceil(camX + width/(2*SCL)),world.length - 1);
-  int startY = max(floor(camY - height/(2*SCL)) - 1,0);
+  int startY = max(floor(camY - height/(2*SCL)) - 2,0);
   int endY = min(ceil(camY + height/(2*SCL)) + 1,world[0].length - 1);
   for (int x = startX; x <= endX; x++) {
     float screenX = toScreenX(x);
