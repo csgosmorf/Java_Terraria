@@ -14,18 +14,19 @@ void loadImages() {
 }
 
 void keyPressed() {
-  if (key == 'w') KEY_W = true;
-  else if (key == 'a') KEY_A = true;
-  else if (key == 's') KEY_S = true;
-  else if (key == 'd') KEY_D = true;
+  if (key == 'w' || key == 'W') KEY_W = true;
+  else if (key == 'a' || key == 'A') KEY_A = true;
+  else if (key == 's' || key == 'S') KEY_S = true;
+  else if (key == 'd' || key == 'D') KEY_D = true;
   else if (key == ' ') KEY_SPACE = true;
 }
 
 void keyReleased() {
-  if (key == 'w') KEY_W = false;
-  else if (key == 'a') KEY_A = false;
-  else if (key == 's') KEY_S = false;
-  else if (key == 'd') KEY_D = false;
+  if (key == 'w' || key == 'W') KEY_W = false;
+  else if (key == 'a' || key == 'A') KEY_A = false;
+  else if (key == 's' || key == 'S') KEY_S = false;
+  else if (key == 'd' || key == 'D') KEY_D = false;
+  else if (key == ' ') KEY_SPACE = false;
 }
 
 void drawDevText() {
@@ -36,6 +37,9 @@ void drawDevText() {
   text("toBlockY(mouseY) = " + toBlockY(mouseY),50,95);
   text("playerPosX = " + player.pos.x,50,110);
   text("playerPosY = " + player.pos.y,50,125);
+}
+boolean inWorld(int x, int y) {
+  return inRange(x,0,WORLD_WIDTH) && inRange(y,0,WORLD_HEIGHT);
 }
 
 boolean inRange(float n, float min, float max) { return (n >= min && n < max); }

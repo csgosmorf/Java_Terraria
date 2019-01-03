@@ -1,4 +1,6 @@
 Player player = new Player(WORLD_WIDTH / 2.0, SURFACE_HEIGHT + TERRAIN_HEIGHT);
+float[] xCollideOffsets = {0.0,1.0,1.4};
+float[] yCollideOffsets = {-1.7,-1.0,0.0,0.85};
 
 class Player {
   PVector pos;
@@ -20,6 +22,7 @@ class Player {
     keepPlayerInWorld();
     fixPlayerCollisions();
     setCamera(pos.x + 0.75,pos.y + 1 - 1.4);
+    //setCamera(max(width/(2*SCL),camX),camY);
     vel.set(0,0);
   }
   
@@ -51,41 +54,44 @@ class Player {
   
   void fixPlayerCollisions() {
     if (vel.x < 0) {
-      if (world[(int)(pos.x)][(int)(pos.y - 1.7)] != 0)
-          pos.x = (int)pos.x + 1;
-      if (world[(int)(pos.x)][(int)(pos.y - 1)] != 0) 
-          pos.x = (int)pos.x + 1;
-      if (world[(int)(pos.x)][(int)(pos.y + 0)] != 0) 
-          pos.x = (int)pos.x + 1;
-      if (world[(int)(pos.x)][(int)(pos.y + 0.85)] != 0) 
-          pos.x = (int)pos.x + 1;
+      for (int i = 0; i < 4; i++) {
+        int row = (int)(pos.x);
+        int col = (int)(pos.y + yCollideOffsets[i]);
+        if (inWorld(row,col)) {
+          if (world[row][col] != 0)
+            pos.x = (int)pos.x + 1;
+        }
+      }
     }
     else if (vel.x > 0) {
-      if (world[(int)(pos.x + 1.5)][(int)(pos.y - 1.7)] != 0)
-          pos.x = (int)pos.x + 0.5;
-      if (world[(int)(pos.x + 1.5)][(int)(pos.y - 1)] != 0) 
-          pos.x = (int)pos.x + 0.5;
-      if (world[(int)(pos.x + 1.5)][(int)(pos.y + 0)] != 0) 
-          pos.x = (int)pos.x + 0.5;
-      if (world[(int)(pos.x + 1.5)][(int)(pos.y + 0.85)] != 0) 
-          pos.x = (int)pos.x + 0.5;
+      for (int i = 0; i < 4; i++) {
+        int row = (int)(pos.x + 1.5);
+        int col = (int)(pos.y + yCollideOffsets[i]);
+        if (inWorld(row,col)) {
+          if (world[row][col] != 0)
+            pos.x = (int)pos.x + 0.5;
+        }
+      }
     }
-    
     if (vel.y < 0) {
-      if (world[(int)(pos.x)][(int)(pos.y - 1.8)] != 0)
-        pos.y = (int)pos.y + 0.8;
-      if (world[(int)(pos.x + 1)][(int)(pos.y - 1.8)] != 0)
-        pos.y = (int)pos.y + 0.8;
-      if (world[(int)(pos.x + 1.4)][(int)(pos.y - 1.8)] != 0)
-        pos.y = (int)pos.y + 0.8;
+      for (int i = 0; i < 3; i++) {
+        int row = (int)(pos.x + xCollideOffsets[i]);
+        int col = (int)(pos.y - 1.8);
+        if (inWorld(row,col)) {
+          if (world[row][col] != 0)
+            pos.y = (int)pos.y + 0.8;
+        }
+      }
     }
     else if (vel.y > 0) {
-      if (world[(int)(pos.x)][(int)(pos.y + 1)] != 0) 
-          pos.y = (int)pos.y;
-      if (world[(int)(pos.x + 1)][(int)(pos.y + 1)] != 0) 
-          pos.y = (int)pos.y;
-      if (world[(int)(pos.x + 1.4)][(int)(pos.y + 1)] != 0) 
-          pos.y = (int)pos.y;
+      for (int i = 0; i < 3; i++) {
+        int row = (int)(pos.x + xCollideOffsets[i]);
+        int col = (int)(pos.y + 1);
+        if (inWorld(row,col)) {
+          if (world[row][col] != 0)
+            pos.y = (int)pos.y;
+        }
+      }
     }
   }
   
