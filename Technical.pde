@@ -37,18 +37,19 @@ void loadImages() {
     running_right[i] = spriteSheet.get(4,346 + i * 56,32,44);
     running_left[i] = mirrorOf(running_right[i]);
   }
-  
-  standing_right.resize(round(SCL*1.5*(32.0/24)),round(SCL*2.8));
-  standing_left.resize(round(SCL*1.5*(32.0/24)),round(SCL*2.8));
-  jumping_right.resize(round(SCL*1.5*(32.0/24)),round(SCL*2.8));
-  jumping_left.resize(round(SCL*1.5*(32.0/24)),round(SCL*2.8));
+  resizePlayerAnimations();
+}
+
+void resizePlayerAnimations() {
+  standing_right.resize(round(SCL*1.5*(standing_right.width/24.0)),round(SCL*2.8));
+  standing_left.resize(round(SCL*1.5*(standing_left.width/24.0)),round(SCL*2.8));
+  jumping_right.resize(round(SCL*1.5*(jumping_right.width/24.0)),round(SCL*2.8));
+  jumping_left.resize(round(SCL*1.5*(jumping_left.width/24.0)),round(SCL*2.8));
   for (int i = 0; i < 14; i++) {
     running_left[i].resize(round(SCL*1.5*(32.0/24)),round(SCL*2.8*(44.0/42)));
     running_right[i].resize(round(SCL*1.5*(32.0/24)),round(SCL*2.8*(44.0/42)));
   }
 }
-
-
 
 PImage mirrorOf(PImage imgIn) {
   int w = imgIn.width;
@@ -95,11 +96,11 @@ void drawDevText() {
   text("onGround = " + player.onGround(),50,170);
 }
 boolean inWorld(int x, int y) {
-  return inRange(x,0,WORLD_WIDTH) && inRange(y,0,WORLD_HEIGHT);
+  return inRange(x,0,WORLD_WIDTH-1) && inRange(y,0,WORLD_HEIGHT-1);
 }
 
-boolean inRange(float n, float min, float max) { return (n >= min && n < max); }
+boolean inRange(float n, float min, float max) { return (n >= min && n <= max); }
 float toScreenX(float x) { return SCL*(x - camX) + width/2; }
 float toScreenY(float y) { return height/2 - SCL*(y + 1 - camY); }
 int toBlockX(float x) { return floor((x - width/2)/(SCL) + camX); }
-int toBlockY(float y) { return floor((y-height/2)/-SCL +camY); }
+int toBlockY(float y) { return floor((y-height/2)/-SCL + camY); }

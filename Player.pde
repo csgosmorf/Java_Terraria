@@ -1,13 +1,14 @@
-Player player = new Player(WORLD_WIDTH / 2.0, SURFACE_HEIGHT + TERRAIN_HEIGHT);
+Player player = new Player(WORLD_WIDTH / 2.0, SURFACE_HEIGHT + TERRAIN_HEIGHT + 4);
 float[] xCollideOffsets = {0.0,1.0,1.3};
 float[] yCollideOffsets = {-1.6,-1.0,0.0,0.75};
 float totalIterateTime = 0.0;
+float player_width = 1.5;
+float player_height = 2.8;
 
 class Player {
   PVector pos;
   PVector vel;
   PVector acc;
-  boolean onGround = false;
   char direction = 'R';
   float walkingFrame = 0;
   
@@ -144,14 +145,13 @@ class Player {
     //strokeWeight(2);
     //stroke(120,150,0);
     //rect(toScreenX(pos.x),toScreenY(pos.y),SCL*1.5 , SCL * 2.8);
-    //fill(255,0,0);
   }
   
   void mine() {
     int blockX = toBlockX(mouseX);
     int blockY = toBlockY(mouseY);
     if (mousePressed && mouseButton == LEFT)
-    if (inRange(blockX,0,WORLD_WIDTH) && inRange(blockY,0,WORLD_HEIGHT))
+    if (inRange(blockX,0,WORLD_WIDTH-1) && inRange(blockY,0,WORLD_HEIGHT-1))
       world[blockX][blockY] = 0;
   }
   
@@ -159,8 +159,10 @@ class Player {
     int blockX = toBlockX(mouseX);
     int blockY = toBlockY(mouseY);
     if (mousePressed && mouseButton == RIGHT)
-    if (inRange(blockX,0,WORLD_WIDTH) && inRange(blockY,0,WORLD_HEIGHT))
+    if (inRange(blockX,0,WORLD_WIDTH-1) && inRange(blockY,0,WORLD_HEIGHT-1)) {
+      text("Placing...",50,185);
       world[blockX][blockY] = 1;
+    }
   }
   
   //Returns true if collision occurs in X dir
@@ -177,7 +179,7 @@ class Player {
         }
       }
       for (int i = 0; i < 4; i++) {
-        int row = (int)(pos.x + 1.5);
+        int row = (int)(pos.x + player_width);
         int col = (int)(pos.y + yCollideOffsets[i]);
         if (inWorld(row,col)) {
           if (world[row][col] != 0) {
@@ -194,7 +196,7 @@ class Player {
       boolean hitY = false;
       for (int i = 0; i < 3; i++) {
         int row = (int)(pos.x + xCollideOffsets[i]);
-        int col = (int)(pos.y - 1.8);
+        int col = (int)(pos.y - player_height) + 1;
         if (inWorld(row,col)) {
           if (world[row][col] != 0) {
             pos.y = (int)pos.y + 0.8;
@@ -204,7 +206,7 @@ class Player {
       }
       for (int i = 0; i < 3; i++) {
         int row = (int)(pos.x + xCollideOffsets[i]);
-        int col = (int)(pos.y + 1);
+        int col = (int)(pos.y) + 1;
         if (inWorld(row,col)) {
           if (world[row][col] != 0) {
             pos.y = (int)pos.y;
@@ -218,16 +220,16 @@ class Player {
   void keepPlayerInWorldX() {
     if (pos.x < 0) {
       pos.x = 0;
-    } else if (pos.x > world.length - 1.5) {
-      pos.x = world.length - 1.5;
+    } else if (pos.x > world.length - player_width) {
+      pos.x = world.length - player_width;
     }
   }
   
   void keepPlayerInWorldY() {
-    if (pos.y - 2.8 < 0) {
-      pos.y = 0;
-    } else if (pos.y > world[0].length - 2) {
-      pos.y = world[0].length - 2;
+    if (pos.y < -1 + player_height) {
+      pos.y = -1 + player_height;
+    } else if (pos.y > WORLD_HEIGHT - 1) {
+      pos.y = world[0].length - 1;
     }
   }
 }
