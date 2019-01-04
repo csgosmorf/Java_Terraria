@@ -1,4 +1,5 @@
 boolean KEY_W = false, KEY_A = false, KEY_S = false, KEY_D = false, KEY_SPACE = false;
+boolean MOUSE_LEFT = false, MOUSE_RIGHT = false;
 float camX = WORLD_WIDTH / 2.0;
 float camY = SURFACE_HEIGHT + TERRAIN_HEIGHT;
 static PImage blue_cursor;

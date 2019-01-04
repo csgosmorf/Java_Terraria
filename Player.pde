@@ -5,10 +5,10 @@ static float player_height = 2.8;
 static float SMALL_NUM = 0.001;
 static float ANIMATE_SPEED = 2;
 static float MIN_ANIMATE_SPEED = 0.1;
-static float horizontal_accel = 50;
+static float horizontal_accel = 60;
 static float jump_accel = 2000;
 static float jump_vel = 40;
-static float friction_strength = 5;
+static float friction_strength = 7;
 static float MAX_XSPEED = 15;
 static float MAX_YSPEED = 40;
 static float collideStepSize = 0.15;
@@ -29,29 +29,33 @@ class Player {
   void update(float dt) {
     acc.y += GRAVITY.y;
     
+    if (KEY_A) {
+      acc.x -= horizontal_accel;
+    }
+    if (KEY_D) {
+      acc.x += horizontal_accel;
+    }
+    
+    vel.add(PVector.mult(acc,dt));
+    
     if (!KEY_D && !KEY_A) {
       float friction = -vel.x * friction_strength;
       vel.x += friction * dt;
     }
     
-    vel.add(PVector.mult(acc,dt));
+    if (abs(vel.x) < 2 && acc.x == 0) vel.x = 0;
+    
     if (KEY_SPACE && onGround()) {
       vel.y += jump_vel;
       KEY_SPACE = false;
-    }
-    if (KEY_A) {
-      vel.x -= horizontal_accel * dt;
-    }
-    if (KEY_D) {
-      vel.x += horizontal_accel * dt;
     }
     
     vel.x = constrain(vel.x,-MAX_XSPEED, MAX_XSPEED);
     vel.y = constrain(vel.y,-MAX_YSPEED, MAX_YSPEED);
     
-    iterativeCollideFixY(dt);
-    iterativeCollideFixX(dt);
-    if (abs(vel.x) < 0.05 && acc.x == 0) vel.x = 0;
+    updatePosition(dt);
+    
+    
     showVel();
     showPos();
     acc.set(0,0);
@@ -63,6 +67,11 @@ class Player {
     int[] x = {(int)(pos.x), (int)(pos.x + 1), (int)(pos.x + player_width - SMALL_NUM)};
     int y = (int)(pos.y - player_height + 1 - SMALL_NUM);
     return yesBlockNoAir(x[0],y) || yesBlockNoAir(x[1],y) || yesBlockNoAir(x[2],y);
+  }
+  
+  void updatePosition(float dt) {
+    iterativeCollideFixX(dt);
+    iterativeCollideFixY(dt);
   }
   
   void iterativeCollideFixX(float dt) {
