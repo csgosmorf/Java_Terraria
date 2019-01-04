@@ -1,9 +1,9 @@
 Player player = new Player(WORLD_WIDTH / 2.0, SURFACE_HEIGHT + TERRAIN_HEIGHT + 4);
-float[] xCollideOffsets = {0.0,1.0,1.3};
-float[] yCollideOffsets = {-1.6,-1.0,0.0,0.75};
 float totalIterateTime = 0.0;
 float player_width = 1.5;
 float player_height = 2.8;
+float[] xCollideOffsets = {0.0,1.0,player_width - 0.2};
+float[] yCollideOffsets = {-1.6,-1.0,0.0,0.75};
 
 class Player {
   PVector pos;

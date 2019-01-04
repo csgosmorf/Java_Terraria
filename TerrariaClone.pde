@@ -9,7 +9,7 @@ void setup() {
   allocateWorld();
   generateDirt();
   loadImages();
-  
+  cursor(blue_cursor);
   //frameTimes = new ArrayList<Integer>();
 }
 

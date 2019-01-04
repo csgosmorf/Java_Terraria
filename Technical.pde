@@ -1,6 +1,7 @@
 boolean KEY_W = false, KEY_A = false, KEY_S = false, KEY_D = false, KEY_SPACE = false;
 float camX = WORLD_WIDTH / 2.0;
 float camY = SURFACE_HEIGHT + TERRAIN_HEIGHT;
+static PImage blue_cursor;
 static PImage dirtImg;
 static PImage spriteSheet;
 static PImage standing_left;
@@ -21,6 +22,7 @@ void limitCamToWorld() {
 }
 
 void loadImages() {
+  blue_cursor = loadImage("data/images/cursors/myCursor.png","png");
   dirtImg = loadImage("data/images/textures/0.png", "png");
   dirtImg.resize(SCL,SCL);
   
