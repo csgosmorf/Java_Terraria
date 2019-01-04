@@ -3,13 +3,14 @@ float totalIterateTime = 0.0;
 static float player_width = 1.5;
 static float player_height = 2.8;
 static float SMALL_NUM = 0.001;
-static float ANIMATE_SPEED = 1.4;
-static float MIN_ANIMATE_SPEED = 0.2;
-static float horizontal_accel = 0.02;
-static float jump_accel = 0.7;
-static float friction_strength = 0.9;
-static float MAX_XSPEED = 0.3;
-static float MAX_YSPEED = 0.6;
+static float ANIMATE_SPEED = 2;
+static float MIN_ANIMATE_SPEED = 0.1;
+static float horizontal_accel = 50;
+static float jump_accel = 2000;
+static float jump_vel = 40;
+static float friction_strength = 5;
+static float MAX_XSPEED = 15;
+static float MAX_YSPEED = 40;
 static float collideStepSize = 0.15;
 
 class Player {
@@ -25,74 +26,152 @@ class Player {
     acc = new PVector(0,0);
   }
   
-  void update() {
-    acc.add(GRAVITY);
+  //void update(double dt) {
+  //  acc.add(GRAVITY);
+  //  if (KEY_SPACE && onGround()) {
+  //    acc.y += jump_accel;
+  //    KEY_SPACE = false;
+  //  }
+  //  if (KEY_A) {
+  //    acc.x -= horizontal_accel;
+  //  }
+  //  if (KEY_D) {
+  //    acc.x += horizontal_accel;
+  //  }
+  //  vel.x += acc.x * dt;
+  //  vel.y += acc.y * dt;
+  //  //vel.add(acc);
+    
+  //  if (!KEY_D && !KEY_A) {
+  //    vel.x *= friction_strength;
+  //  }
+    
+  //  //vel.x = constrain(vel.x,-MAX_XSPEED, MAX_XSPEED);
+  //  //vel.y = constrain(vel.y,-MAX_YSPEED, MAX_YSPEED);
+    
+  //  iterativeCollideFixY();
+  //  iterativeCollideFixX();
+    
+  //  setCamera(pos.x + player_width/2,pos.y + 1 - player_height/2);
+  //  limitCamToWorld();
+  //  if (abs(vel.x) < 0.05 && acc.x == 0) vel.x = 0;
+  //  acc.set(0,0);
+  //}
+  
+  void update(float dt) {
+    acc.y += GRAVITY.y;
+    //if (KEY_SPACE && onGround()) {
+    //  acc.y += jump_accel;
+    //  KEY_SPACE = false;
+    //}
+    //if (KEY_A) {
+    //  acc.x -= horizontal_accel;
+    //}
+    //if (KEY_D) {
+    //  acc.x += horizontal_accel;
+    //}
+    
+    if (!KEY_D && !KEY_A) {
+      float friction = -vel.x * friction_strength;
+      vel.x += friction * dt;
+    }
+    
+    vel.x += acc.x * dt;
+    vel.y += acc.y * dt;
     if (KEY_SPACE && onGround()) {
-      acc.y += jump_accel;
+      vel.y += jump_vel;
       KEY_SPACE = false;
     }
     if (KEY_A) {
-      acc.x -= horizontal_accel;
+      vel.x -= horizontal_accel * dt;
     }
     if (KEY_D) {
-      acc.x += horizontal_accel;
+      vel.x += horizontal_accel * dt;
     }
-    if (!KEY_D && !KEY_A) {
-      vel.x *= friction_strength;
-    }
-    vel.add(acc);
     
-    vel.x = constrain(vel.x,-MAX_XSPEED,MAX_XSPEED);
-    vel.y = constrain(vel.y,-MAX_YSPEED,MAX_YSPEED);
     
-    iterativeCollideFixY();
-    iterativeCollideFixX();
+    vel.x = constrain(vel.x,-MAX_XSPEED, MAX_XSPEED);
+    vel.y = constrain(vel.y,-MAX_YSPEED, MAX_YSPEED);
+    text("playerVelX = " + player.vel.x,50,140);
+    text("playerVelY = " + player.vel.y,50,155);
     
-    setCamera(pos.x + player_width/2,pos.y + 1 - player_height/2);
-    limitCamToWorld();
+    iterativeCollideFixY(dt);
+    iterativeCollideFixX(dt);
     if (abs(vel.x) < 0.05 && acc.x == 0) vel.x = 0;
     acc.set(0,0);
+    setCamera(pos.x + player_width/2,pos.y + 1 - player_height/2);
+    limitCamToWorld();
+    text("playerPosX = " + player.pos.x,50,110);
+    text("playerPosY = " + player.pos.y,50,125);
   }
   
   boolean onGround() {
     int[] x = {(int)(pos.x), (int)(pos.x + 1), (int)(pos.x + player_width - SMALL_NUM)};
-    int y = (int)(pos.y - player_height + SMALL_NUM);
+    int y = (int)(pos.y - player_height + 1 - SMALL_NUM);
     return yesBlockNoAir(x[0],y) || yesBlockNoAir(x[1],y) || yesBlockNoAir(x[2],y);
   }
   
   //Does as many steps as needed to add vel to pos without collision mistake
-  void iterativeCollideFixX() {
+  //void iterativeCollideFixX() {
+  //  boolean hitX = false;
+  //  int numAdds = (int)(abs(vel.x) / collideStepSize);
+  //  for (int i = 0; i < numAdds; i++) {
+  //    pos.x += (vel.x > 0 ? collideStepSize: -collideStepSize);
+  //    keepPlayerInWorldX();
+  //    hitX = fixCollisionX() || hitX;
+  //  }
+  //  float remainder = abs(vel.x) - numAdds * collideStepSize;
+  //  pos.x += vel.x > 0 ? remainder: -remainder;
+  //  keepPlayerInWorldX();
+  //  hitX = fixCollisionX() || hitX;
+  //  if (hitX) vel.x = 0;
+  //}
+  void iterativeCollideFixX(float dt) {
     boolean hitX = false;
-    int numAdds = (int)(abs(vel.x) / collideStepSize);
+    int numAdds = (int)(abs(vel.x*dt) / collideStepSize);
     for (int i = 0; i < numAdds; i++) {
       pos.x += (vel.x > 0 ? collideStepSize: -collideStepSize);
       keepPlayerInWorldX();
       hitX = fixCollisionX() || hitX;
     }
-    float remainder = abs(vel.x) - numAdds * collideStepSize;
-    pos.x += vel.x > 0 ? remainder: -remainder;
+    float remainder = abs(vel.x*dt) - numAdds * collideStepSize;
+    pos.x += (vel.x > 0 ? remainder: -remainder);
     keepPlayerInWorldX();
     hitX = fixCollisionX() || hitX;
     if (hitX) vel.x = 0;
   }
   
   //Does as many steps as needed to add vel to pos without collision mistake
-  void iterativeCollideFixY() {
+  //void iterativeCollideFixY() {
+  //  boolean hitY = false;
+  //  int numAdds = (int)(abs(vel.y) / collideStepSize);
+  //  for (int i = 0; i < numAdds; i++) {
+  //    pos.y += (vel.y > 0 ? collideStepSize: -collideStepSize);
+  //    keepPlayerInWorldY();
+  //    hitY = fixCollisionY() || hitY;
+  //  }
+  //  float remainder = abs(vel.y) - numAdds * collideStepSize;
+  //  pos.y += vel.y > 0 ? remainder: -remainder;
+  //  keepPlayerInWorldY();
+  //  hitY = fixCollisionY() || hitY;
+  //  if (hitY) vel.y = 0;
+  //}
+  void iterativeCollideFixY(float dt) {
     boolean hitY = false;
-    int numAdds = (int)(abs(vel.y) / collideStepSize);
+    int numAdds = (int)(abs(vel.y*dt) / (collideStepSize));
     for (int i = 0; i < numAdds; i++) {
       pos.y += (vel.y > 0 ? collideStepSize: -collideStepSize);
       keepPlayerInWorldY();
       hitY = fixCollisionY() || hitY;
     }
-    float remainder = abs(vel.y) - numAdds * collideStepSize;
-    pos.y += vel.y > 0 ? remainder: -remainder;
+    float remainder = abs(vel.y*dt) - numAdds * collideStepSize;
+    pos.y += (vel.y > 0 ? remainder: -remainder);
     keepPlayerInWorldY();
     hitY = fixCollisionY() || hitY;
     if (hitY) vel.y = 0;
   }
   
-  void display() {
+  void display(float dt) {
     imageMode(CENTER);
     float x = toScreenX(pos.x) + SCL * (player_width/2);
     float y = toScreenY(pos.y) + SCL* (player_height/2);
@@ -101,7 +180,7 @@ class Player {
       else if (vel.x == 0) { image(standing_left,x,y); walkFrame = 0; }
       else { 
         image(running_left[(int)walkFrame],x,y);
-        walkFrame += animationSpeed();
+        walkFrame += animationSpeed(dt);
         if (walkFrame >= running_right.length) walkFrame = 0;
       }
     } 
@@ -110,7 +189,7 @@ class Player {
       else if (vel.x == 0) { image(standing_right,x,y); walkFrame = 0; }
       else {
         image(running_right[(int)walkFrame],x,y);
-        walkFrame += animationSpeed();
+        walkFrame += animationSpeed(dt);
         if (walkFrame >= running_right.length) walkFrame = 0;
       }
     }
@@ -131,8 +210,8 @@ class Player {
       world[blockX][blockY] = DIRT;
   }
   
-  float animationSpeed() {
-    return max(abs(vel.x)*ANIMATE_SPEED,MIN_ANIMATE_SPEED);
+  float animationSpeed(float dt) {
+    return max(abs(vel.x*dt)*ANIMATE_SPEED,MIN_ANIMATE_SPEED);
   }
   
   //Returns true if collide in X, used for iterativeCollisionFixX
