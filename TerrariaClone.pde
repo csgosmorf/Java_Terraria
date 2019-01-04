@@ -11,7 +11,6 @@ void setup() {
   generateDirt();
   loadImages();
   cursor(blue_cursor);
-  camY = SURFACE_HEIGHT + TERRAIN_HEIGHT + 10;
 }
 
 void draw() {
