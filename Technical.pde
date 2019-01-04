@@ -11,11 +11,7 @@ static PImage jumping_right;
 static PImage[] running_right;
 static PImage[] running_left;
 
-void setCamera(float x, float y) {
-  camX = x;
-  camY = y;
-}
-
+void setCamera(float x, float y) { camX = x; camY = y; }
 void limitCamToWorld() {
   camX = constrain(camX,width/(2*SCL),WORLD_WIDTH - width/(2*SCL));
   camY = constrain(camY,height/(2*SCL) + 1,WORLD_HEIGHT - height/(2.0*SCL));
@@ -97,10 +93,7 @@ void drawDevText() {
   text("playerVelY = " + player.vel.y,50,155);
   text("onGround = " + player.onGround(),50,170);
 }
-boolean inWorld(int x, int y) {
-  return inRange(x,0,WORLD_WIDTH-1) && inRange(y,0,WORLD_HEIGHT-1);
-}
-
+boolean inWorld(int x, int y) { return inRange(x,0,WORLD_WIDTH-1) && inRange(y,0,WORLD_HEIGHT-1);}
 boolean inRange(float n, float min, float max) { return (n >= min && n <= max); }
 float toScreenX(float x) { return SCL*(x - camX) + width/2; }
 float toScreenY(float y) { return height/2 - SCL*(y + 1 - camY); }

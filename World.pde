@@ -43,5 +43,5 @@ void drawBlocks() {
     }
   }
 }
-//Makes sure block is within bounds first
-boolean isAir(int x, int y) { return inWorld(x,y) && world[x][y] == 0; }
+//Makes sure block is within bounds and not air
+boolean yesBlockNoAir(int x, int y) { return inWorld(x,y) && world[x][y] != 0; }
