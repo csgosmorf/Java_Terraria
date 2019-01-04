@@ -1,19 +1,21 @@
 //Terraria Clone by Peter Barnett
 
-float t = 0.0;
-float rate = 120;
-float dt = 1.0 / (rate - 9);
+//Setting dt to 1/60 sec. for 1st frame
+float t0 = 0.0, t1 = 0.0;
+float dt = 1.0 / 60.0;
 
 void setup() {
   fullScreen(P3D);
-  frameRate(rate);
+  frameRate(1000);
   allocateWorld();
   generateDirt();
   loadImages();
   cursor(blue_cursor);
+  camY = SURFACE_HEIGHT + TERRAIN_HEIGHT + 10;
 }
 
 void draw() {
+  adjustTiming();
   drawSky();
   player.update(dt);
   player.mine();
@@ -21,4 +23,14 @@ void draw() {
   drawBlocks();
   player.display(dt);
   drawDevText();
+}
+
+void adjustTiming() {
+  if (frameCount == 1) {
+    t0 = System.nanoTime();
+  } else {
+    t0 = t1;
+    t1 = System.nanoTime();
+    dt = (t1 - t0) / 1E9;
+  }
 }

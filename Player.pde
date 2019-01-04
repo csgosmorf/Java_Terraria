@@ -1,4 +1,4 @@
-Player player = new Player(WORLD_WIDTH / 2.0, SURFACE_HEIGHT + TERRAIN_HEIGHT + 4);
+Player player = new Player(WORLD_WIDTH / 2.0, SURFACE_HEIGHT + TERRAIN_HEIGHT + 10);
 float totalIterateTime = 0.0;
 static float player_width = 1.5;
 static float player_height = 2.8;
@@ -26,58 +26,15 @@ class Player {
     acc = new PVector(0,0);
   }
   
-  //void update(double dt) {
-  //  acc.add(GRAVITY);
-  //  if (KEY_SPACE && onGround()) {
-  //    acc.y += jump_accel;
-  //    KEY_SPACE = false;
-  //  }
-  //  if (KEY_A) {
-  //    acc.x -= horizontal_accel;
-  //  }
-  //  if (KEY_D) {
-  //    acc.x += horizontal_accel;
-  //  }
-  //  vel.x += acc.x * dt;
-  //  vel.y += acc.y * dt;
-  //  //vel.add(acc);
-    
-  //  if (!KEY_D && !KEY_A) {
-  //    vel.x *= friction_strength;
-  //  }
-    
-  //  //vel.x = constrain(vel.x,-MAX_XSPEED, MAX_XSPEED);
-  //  //vel.y = constrain(vel.y,-MAX_YSPEED, MAX_YSPEED);
-    
-  //  iterativeCollideFixY();
-  //  iterativeCollideFixX();
-    
-  //  setCamera(pos.x + player_width/2,pos.y + 1 - player_height/2);
-  //  limitCamToWorld();
-  //  if (abs(vel.x) < 0.05 && acc.x == 0) vel.x = 0;
-  //  acc.set(0,0);
-  //}
-  
   void update(float dt) {
     acc.y += GRAVITY.y;
-    //if (KEY_SPACE && onGround()) {
-    //  acc.y += jump_accel;
-    //  KEY_SPACE = false;
-    //}
-    //if (KEY_A) {
-    //  acc.x -= horizontal_accel;
-    //}
-    //if (KEY_D) {
-    //  acc.x += horizontal_accel;
-    //}
     
     if (!KEY_D && !KEY_A) {
       float friction = -vel.x * friction_strength;
       vel.x += friction * dt;
     }
     
-    vel.x += acc.x * dt;
-    vel.y += acc.y * dt;
+    vel.add(PVector.mult(acc,dt));
     if (KEY_SPACE && onGround()) {
       vel.y += jump_vel;
       KEY_SPACE = false;
@@ -89,20 +46,17 @@ class Player {
       vel.x += horizontal_accel * dt;
     }
     
-    
     vel.x = constrain(vel.x,-MAX_XSPEED, MAX_XSPEED);
     vel.y = constrain(vel.y,-MAX_YSPEED, MAX_YSPEED);
-    text("playerVelX = " + player.vel.x,50,140);
-    text("playerVelY = " + player.vel.y,50,155);
     
     iterativeCollideFixY(dt);
     iterativeCollideFixX(dt);
     if (abs(vel.x) < 0.05 && acc.x == 0) vel.x = 0;
+    showVel();
+    showPos();
     acc.set(0,0);
     setCamera(pos.x + player_width/2,pos.y + 1 - player_height/2);
     limitCamToWorld();
-    text("playerPosX = " + player.pos.x,50,110);
-    text("playerPosY = " + player.pos.y,50,125);
   }
   
   boolean onGround() {
@@ -111,21 +65,6 @@ class Player {
     return yesBlockNoAir(x[0],y) || yesBlockNoAir(x[1],y) || yesBlockNoAir(x[2],y);
   }
   
-  //Does as many steps as needed to add vel to pos without collision mistake
-  //void iterativeCollideFixX() {
-  //  boolean hitX = false;
-  //  int numAdds = (int)(abs(vel.x) / collideStepSize);
-  //  for (int i = 0; i < numAdds; i++) {
-  //    pos.x += (vel.x > 0 ? collideStepSize: -collideStepSize);
-  //    keepPlayerInWorldX();
-  //    hitX = fixCollisionX() || hitX;
-  //  }
-  //  float remainder = abs(vel.x) - numAdds * collideStepSize;
-  //  pos.x += vel.x > 0 ? remainder: -remainder;
-  //  keepPlayerInWorldX();
-  //  hitX = fixCollisionX() || hitX;
-  //  if (hitX) vel.x = 0;
-  //}
   void iterativeCollideFixX(float dt) {
     boolean hitX = false;
     int numAdds = (int)(abs(vel.x*dt) / collideStepSize);
@@ -141,21 +80,6 @@ class Player {
     if (hitX) vel.x = 0;
   }
   
-  //Does as many steps as needed to add vel to pos without collision mistake
-  //void iterativeCollideFixY() {
-  //  boolean hitY = false;
-  //  int numAdds = (int)(abs(vel.y) / collideStepSize);
-  //  for (int i = 0; i < numAdds; i++) {
-  //    pos.y += (vel.y > 0 ? collideStepSize: -collideStepSize);
-  //    keepPlayerInWorldY();
-  //    hitY = fixCollisionY() || hitY;
-  //  }
-  //  float remainder = abs(vel.y) - numAdds * collideStepSize;
-  //  pos.y += vel.y > 0 ? remainder: -remainder;
-  //  keepPlayerInWorldY();
-  //  hitY = fixCollisionY() || hitY;
-  //  if (hitY) vel.y = 0;
-  //}
   void iterativeCollideFixY(float dt) {
     boolean hitY = false;
     int numAdds = (int)(abs(vel.y*dt) / (collideStepSize));

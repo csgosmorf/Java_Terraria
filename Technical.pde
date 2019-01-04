@@ -83,15 +83,25 @@ void keyReleased() {
 
 void drawDevText() {
   fill(0);
+  showFPS();
   text("camera: " + camX + ", " + camY,50,50);
-  text("FPS: " + frameRate,50,65);
   text("toBlockX(mouseX) = " + toBlockX(mouseX),50,80);
   text("toBlockY(mouseY) = " + toBlockY(mouseY),50,95);
-  //text("playerPosX = " + player.pos.x,50,110);
-  //text("playerPosY = " + player.pos.y,50,125);
-  //text("playerVelX = " + player.vel.x,50,140);
-  //text("playerVelY = " + player.vel.y,50,155);
   text("onGround = " + player.onGround(),50,170);
+}
+
+void showFPS() {
+  text("FPS: " + 1.0 / dt,50,65);
+}
+
+void showPos() {
+  text("playerPosX = " + player.pos.x,50,110);
+  text("playerPosY = " + player.pos.y,50,125);
+}
+
+void showVel() {
+  text("playerVelX = " + player.vel.x,50,140);
+  text("playerVelY = " + player.vel.y,50,155);
 }
 boolean inWorld(int x, int y) { return inRange(x,0,WORLD_WIDTH-1) && inRange(y,0,WORLD_HEIGHT-1);}
 boolean inRange(float n, float min, float max) { return (n >= min && n <= max); }
