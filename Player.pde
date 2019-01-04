@@ -1,9 +1,10 @@
 Player player = new Player(WORLD_WIDTH / 2.0, SURFACE_HEIGHT + TERRAIN_HEIGHT + 4);
 float totalIterateTime = 0.0;
-float player_width = 1.5;
-float player_height = 2.8;
-float[] xCollideOffsets = {0.0,1.0,player_width - 0.2};
-float[] yCollideOffsets = {-1.6,-1.0,0.0,0.75};
+static float player_width = 1.5;
+static float player_height = 2.8;
+static float SMALL_NUM = 0.001;
+static float ANIMATION_SPEED_COEFFICIENT = 1.4;
+static float MIN_ANIMATION_SPEED = 0.2;
 
 class Player {
   PVector pos;
@@ -25,10 +26,10 @@ class Player {
       KEY_SPACE = false;
     }
     if (KEY_A) {
-      acc.x -= 0.06;
+      acc.x -= 0.01;
     }
     if (KEY_D) {
-      acc.x += 0.06;
+      acc.x += 0.01;
     }
     if (!KEY_D && !KEY_A) {
       vel.x *= 0.9;
@@ -51,7 +52,7 @@ class Player {
   
   boolean onGround() {
     int row = (int)(pos.x + 0);
-    int col = (int)(pos.y - 1.82);
+    int col = (int)(pos.y - player_height + SMALL_NUM);
     if (inWorld(row,col)) {
       if (world[row][col] != 0) {
         return true;
@@ -59,14 +60,14 @@ class Player {
     }
     
     row = (int)(pos.x + 1);
-    col = (int)(pos.y - 1.82);
+    col = (int)(pos.y - player_height + SMALL_NUM);
     if (inWorld(row,col)) {
       if (world[row][col] != 0) {
         return true;
       }
     }
-    row = (int)(pos.x + 1.4);
-    col = (int)(pos.y - 1.82);
+    row = (int)(pos.x + player_width - SMALL_NUM);
+    col = (int)(pos.y - player_height + SMALL_NUM);
     if (inWorld(row,col)) {
       if (world[row][col] != 0) {
         return true;
@@ -113,16 +114,16 @@ class Player {
     imageMode(CENTER);
     if (direction == 'L') {
       if (!onGround()) {
-        image(jumping_left,toScreenX(pos.x) + SCL *0.75,toScreenY(pos.y) + SCL*1.4);
+        image(jumping_left,toScreenX(pos.x) + SCL * (player_width/2),toScreenY(pos.y) + SCL* (player_height/2));
       }
       
       else if (vel.x == 0) {
-        image(standing_left,toScreenX(pos.x) + SCL *0.75,toScreenY(pos.y) + SCL*1.4);
+        image(standing_left,toScreenX(pos.x) + SCL * (player_width/2),toScreenY(pos.y) + SCL* (player_height/2));
         walkingFrame = 0;
       }
       else {
-        image(running_left[(int)walkingFrame],toScreenX(pos.x) + SCL *0.75,toScreenY(pos.y) + SCL*1.4);
-        walkingFrame+= max(abs(vel.x)*1.4,0.2);
+        image(running_left[(int)walkingFrame],toScreenX(pos.x) + SCL * (player_width/2),toScreenY(pos.y) + SCL* (player_height/2));
+        walkingFrame+= max(abs(vel.x)*ANIMATION_SPEED_COEFFICIENT,MIN_ANIMATION_SPEED);
         if (walkingFrame >= 13) walkingFrame = 0;
       }
     } 
@@ -137,14 +138,10 @@ class Player {
       }
       else {
         image(running_right[(int)walkingFrame],toScreenX(pos.x) + SCL *0.75,toScreenY(pos.y) + SCL*1.4);
-        walkingFrame+= max(abs(vel.x)*1.4,0.2);
+        walkingFrame+= max(abs(vel.x)*1.4,MIN_ANIMATION_SPEED);
         if (walkingFrame >= 13) walkingFrame = 0;
       }
     }
-    //noFill();
-    //strokeWeight(2);
-    //stroke(120,150,0);
-    //rect(toScreenX(pos.x),toScreenY(pos.y),SCL*1.5 , SCL * 2.8);
   }
   
   void mine() {
@@ -165,54 +162,35 @@ class Player {
     }
   }
   
-  //Returns true if collision occurs in X dir
+  //Returns true if collide in X, used for iterativeCollisionFixX
   boolean fixCollisionX() {
-      boolean hitX = false;
-      for (int i = 0; i < 4; i++) {
-        int row = (int)(pos.x);
-        int col = (int)(pos.y + yCollideOffsets[i]);
-        if (inWorld(row,col)) {
-          if (world[row][col] != 0) {
-            pos.x = (int)pos.x + 1;
-            hitX = true;
-          }
-        }
-      }
-      for (int i = 0; i < 4; i++) {
-        int row = (int)(pos.x + player_width);
-        int col = (int)(pos.y + yCollideOffsets[i]);
-        if (inWorld(row,col)) {
-          if (world[row][col] != 0) {
-            pos.x = (int)pos.x + 0.5;
-            hitX = true;
-          }
-        }
-      }
-      return hitX;
+    int[] x = {(int)(pos.x), (int)(pos.x + player_width)};
+    int[] y = {(int)(pos.y - player_height + 1), (int)(pos.y - 1), (int)(pos.y), (int)(pos.y + 1 - SMALL_NUM)};
+    boolean hitX = false;
+    if (!isAir(x[0],y[0]) || !isAir(x[0],y[1]) || !isAir(x[0],y[2]) || !isAir(x[0],y[3])) {
+      pos.x = (int)pos.x + 1;
+      hitX = true;
+    }
+    if (!isAir(x[1],y[0]) || !isAir(x[1],y[1]) || !isAir(x[1],y[2]) || !isAir(x[1],y[3])) {
+      pos.x = (int)pos.x + 0.5;
+      hitX = true;
+    }
+    return hitX;
   }
   
-  //Returns true if collision occurs in X dir
+  //Returns true if collide in Y, used for iterativeCollisionFixY
   boolean fixCollisionY() {
+      //Block coordinates to be checked
+      int[] x = {(int)(pos.x + SMALL_NUM), (int)(pos.x + 1), (int)(pos.x + player_width - SMALL_NUM)};
+      int[] y = {(int)(pos.y + 1), (int)(pos.y - player_height + 1)};
       boolean hitY = false;
-      for (int i = 0; i < 3; i++) {
-        int row = (int)(pos.x + xCollideOffsets[i]);
-        int col = (int)(pos.y - player_height) + 1;
-        if (inWorld(row,col)) {
-          if (world[row][col] != 0) {
-            pos.y = (int)pos.y + 0.8;
-            hitY = true;
-          }
-        }
+      if (!isAir(x[0],y[0]) || !isAir(x[1],y[0]) || !isAir(x[2],y[0])) {
+        pos.y = (int)pos.y;
+        hitY = true;
       }
-      for (int i = 0; i < 3; i++) {
-        int row = (int)(pos.x + xCollideOffsets[i]);
-        int col = (int)(pos.y) + 1;
-        if (inWorld(row,col)) {
-          if (world[row][col] != 0) {
-            pos.y = (int)pos.y;
-            hitY = true;
-          }
-        }
+      if (!isAir(x[0],y[1]) || !isAir(x[1],y[1]) || !isAir(x[2],y[1])) {
+        pos.y = (int)pos.y + (player_height - (int)player_height);
+        hitY = true;
       }
       return hitY;
   }
@@ -229,7 +207,7 @@ class Player {
     if (pos.y < -1 + player_height) {
       pos.y = -1 + player_height;
     } else if (pos.y > WORLD_HEIGHT - 1) {
-      pos.y = world[0].length - 1;
+      pos.y = WORLD_HEIGHT - 1;
     }
   }
 }

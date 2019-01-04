@@ -18,7 +18,7 @@ void setCamera(float x, float y) {
 
 void limitCamToWorld() {
   camX = constrain(camX,width/(2*SCL),WORLD_WIDTH - width/(2*SCL));
-  camY = constrain(camY,height/(2*SCL) + 1,WORLD_HEIGHT - 2 - height/(2*SCL));
+  camY = constrain(camY,height/(2*SCL) + 1,WORLD_HEIGHT - height/(2.0*SCL));
 }
 
 void loadImages() {
@@ -43,13 +43,13 @@ void loadImages() {
 }
 
 void resizePlayerAnimations() {
-  standing_right.resize(round(SCL*1.5*(standing_right.width/24.0)),round(SCL*2.8));
-  standing_left.resize(round(SCL*1.5*(standing_left.width/24.0)),round(SCL*2.8));
-  jumping_right.resize(round(SCL*1.5*(jumping_right.width/24.0)),round(SCL*2.8));
-  jumping_left.resize(round(SCL*1.5*(jumping_left.width/24.0)),round(SCL*2.8));
+  standing_right.resize(round(SCL*player_width*(standing_right.width/24.0)),round(SCL*player_height));
+  standing_left.resize(round(SCL*player_width*(standing_left.width/24.0)),round(SCL*player_height));
+  jumping_right.resize(round(SCL*player_width*(jumping_right.width/24.0)),round(SCL*player_height));
+  jumping_left.resize(round(SCL*player_width*(jumping_left.width/24.0)),round(SCL*player_height));
   for (int i = 0; i < 14; i++) {
-    running_left[i].resize(round(SCL*1.5*(32.0/24)),round(SCL*2.8*(44.0/42)));
-    running_right[i].resize(round(SCL*1.5*(32.0/24)),round(SCL*2.8*(44.0/42)));
+    running_left[i].resize(round(SCL*player_width*(32.0/24)),round(SCL*player_height*(44.0/42)));
+    running_right[i].resize(round(SCL*player_width*(32.0/24)),round(SCL*player_height*(44.0/42)));
   }
 }
 

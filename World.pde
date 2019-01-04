@@ -1,8 +1,8 @@
 //Constants
 /**/static final int WORLD_WIDTH = 300;
-/**/static final int SURFACE_HEIGHT = 100;
+/**/static final int SURFACE_HEIGHT = 20;
 /**/static final int TERRAIN_HEIGHT = 16;
-/**/static final int SKY_HEIGHT = 200;
+/**/static final int SKY_HEIGHT = 50;
 /**/static final int WORLD_HEIGHT = SURFACE_HEIGHT + TERRAIN_HEIGHT + SKY_HEIGHT;
 /**/static final int SCL = 16;
 /**/static final float TERRAIN_INTENSITY = 0.05;
@@ -14,7 +14,6 @@ byte[][] world;
 
 void drawSky() { background(sky_color); }
 void allocateWorld() { world = new byte[WORLD_WIDTH][WORLD_HEIGHT]; }
-
 void generateDirt() {
   float xoff = 0.0;
   float n = round((TERRAIN_HEIGHT * noise(xoff)));
@@ -44,3 +43,5 @@ void drawBlocks() {
     }
   }
 }
+//Makes sure block is within bounds first
+boolean isAir(int x, int y) { return inWorld(x,y) && world[x][y] == 0; }
