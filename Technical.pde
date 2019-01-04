@@ -14,7 +14,7 @@ static PImage[] running_left;
 void setCamera(float x, float y) { camX = x; camY = y; }
 void limitCamToWorld() {
   camX = constrain(camX,width/(2*SCL),WORLD_WIDTH - width/(2*SCL));
-  camY = constrain(camY,height/(2*SCL) + 1,WORLD_HEIGHT - height/(2.0*SCL));
+  camY = constrain(camY,height/(2*SCL)+1,WORLD_HEIGHT - height/(2.0*SCL));
 }
 
 void loadImages() {

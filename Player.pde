@@ -45,8 +45,8 @@ class Player {
     vel.x = constrain(vel.x,-MAX_XSPEED,MAX_XSPEED);
     vel.y = constrain(vel.y,-MAX_YSPEED,MAX_YSPEED);
     
-    iterativeCollideFixX();
     iterativeCollideFixY();
+    iterativeCollideFixX();
     
     setCamera(pos.x + player_width/2,pos.y + 1 - player_height/2);
     limitCamToWorld();
@@ -138,10 +138,10 @@ class Player {
   //Returns true if collide in X, used for iterativeCollisionFixX
   boolean fixCollisionX() {
     int[] x = {(int)(pos.x), (int)(pos.x + player_width)};
-    int[] y = {(int)(pos.y - player_height + 1), (int)(pos.y - 1), (int)(pos.y), (int)(pos.y + 1 - SMALL_NUM)};
+    int[] y = {(int)(pos.y - player_height + 1 + SMALL_NUM), (int)(pos.y - 1), (int)(pos.y), (int)(pos.y + 1 - SMALL_NUM)};
     boolean hitX = false;
     if (yesBlockNoAir(x[0],y[0]) || yesBlockNoAir(x[0],y[1]) || yesBlockNoAir(x[0],y[2]) || yesBlockNoAir(x[0],y[3])) {
-      pos.x = (int)pos.x + 1;
+      pos.x = (int)(pos.x + 1);
       hitX = true;
     }
     if (yesBlockNoAir(x[1],y[0]) || yesBlockNoAir(x[1],y[1]) || yesBlockNoAir(x[1],y[2]) || yesBlockNoAir(x[1],y[3])) {
