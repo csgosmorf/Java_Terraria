@@ -71,7 +71,10 @@ void keyPressed() {
     KEY_D = true;
     player.direction = 'R';
   }
-  else if (key == ' ') KEY_SPACE = true;
+  else if (key == ' ') {
+    KEY_SPACE = true;
+    if (player.onGround()) jump = true;
+  }
 }
 
 void keyReleased() {
@@ -79,7 +82,10 @@ void keyReleased() {
   else if (key == 'a' || key == 'A') KEY_A = false;
   else if (key == 's' || key == 'S') KEY_S = false;
   else if (key == 'd' || key == 'D') KEY_D = false;
-  else if (key == ' ') KEY_SPACE = false;
+  else if (key == ' ') {
+    KEY_SPACE = false;
+    if (!player.onGround()) jump_canceled = true;
+  }
 }
 
 void drawDevText() {

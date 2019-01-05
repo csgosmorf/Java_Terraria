@@ -1,17 +1,27 @@
 Player player = new Player(WORLD_WIDTH / 2.0, SURFACE_HEIGHT + TERRAIN_HEIGHT + 10);
-float totalIterateTime = 0.0;
 static float player_width = 1.5;
 static float player_height = 2.8;
 static float SMALL_NUM = 0.001;
 static float ANIMATE_SPEED = 2;
 static float MIN_ANIMATE_SPEED = 0.1;
 static float horizontal_accel = 60;
-static float jump_accel = 2000;
-static float jump_vel = 40;
+//static float jump_vel = 40;
+static float jump_accel = 300;
+static float jump_apply_time = 0.2;
+static float jump_time = 0.0;
 static float friction_strength = 7;
 static float MAX_XSPEED = 15;
-static float MAX_YSPEED = 40;
+static float MAX_YSPEED = 80;
 static float collideStepSize = 0.15;
+static float START_ACCEL = 100000;
+static float ATTACK_OF_JUMP = 140;
+
+static boolean jump = false;
+static boolean jump_canceled = false;
+static boolean grounded = false;
+static float jump_speed_slow = 3;
+static float jump_speed_fast = 6;
+
 
 class Player {
   PVector pos;
@@ -27,40 +37,79 @@ class Player {
   }
   
   void update(float dt) {
-    acc.y += GRAVITY.y;
+    acc.add(GRAVITY);
+    acc.x += keyAccelX();
     
-    if (KEY_A) {
-      acc.x -= horizontal_accel;
-    }
-    if (KEY_D) {
-      acc.x += horizontal_accel;
-    }
     
     vel.add(PVector.mult(acc,dt));
+    if (!KEY_D && !KEY_A) { applyFriction(); }
     
-    if (!KEY_D && !KEY_A) {
-      float friction = -vel.x * friction_strength;
-      vel.x += friction * dt;
+    
+    if (jump) {
+      vel.y += jump_speed_fast;
     }
     
-    if (abs(vel.x) < 2 && acc.x == 0) vel.x = 0;
-    
-    if (KEY_SPACE && onGround()) {
-      vel.y += jump_vel;
-      KEY_SPACE = false;
+    if (jump_canceled) {
+      if (vel.y > jump_speed_slow) vel.y = jump_speed_slow;
+      jump_canceled = false;
     }
     
     vel.x = constrain(vel.x,-MAX_XSPEED, MAX_XSPEED);
     vel.y = constrain(vel.y,-MAX_YSPEED, MAX_YSPEED);
-    
     updatePosition(dt);
-    
     
     showVel();
     showPos();
     acc.set(0,0);
+    attachCamToPlayer();
+  }
+  
+  void attachCamToPlayer() {
     setCamera(pos.x + player_width/2,pos.y + 1 - player_height/2);
     limitCamToWorld();
+  }
+  
+  float keyAccelX() {
+    float accAmount = 0.0;
+    if (KEY_A) accAmount -= horizontal_accel;
+    if (KEY_D) accAmount += horizontal_accel;
+    return accAmount;
+  }
+  
+  void initiateJump() {
+    jump_time = 0;
+  }
+ 
+  float accelAtTime(float t) {
+    return sqrt(START_ACCEL - sq(ATTACK_OF_JUMP * t));
+  }
+  
+  float keyAccelY() {
+    float accAmount = 0.0;
+    if (KEY_SPACE) {
+      if (jump_time < 0.2) {
+        accAmount += jump_accel;
+        jump_time += dt;
+      }
+      else if (onGround()) {
+        jump_time = 0.0;
+      }
+    }
+    return accAmount;
+  }
+  
+  void applyFriction() {
+    applyKineticFriction();
+    applyStaticFriction();
+  }
+  
+  void applyKineticFriction() {
+    float friction = -vel.x * friction_strength;
+    vel.x += friction * dt;
+  }
+  
+  void applyStaticFriction() {
+    if (abs(vel.x) < 2 && acc.x == 0) vel.x = 0;
   }
   
   boolean onGround() {
@@ -167,10 +216,10 @@ class Player {
   boolean fixCollisionY() {
       //Block coordinates to be checked
       int[] x = {(int)(pos.x + SMALL_NUM), (int)(pos.x + 1), (int)(pos.x + player_width - SMALL_NUM)};
-      int[] y = {(int)(pos.y + 1), (int)(pos.y - player_height + 1)};
+      int[] y = {(int)(pos.y + 1 - SMALL_NUM), (int)(pos.y - player_height + 1)};
       boolean hitY = false;
       if (yesBlockNoAir(x[0],y[0]) || yesBlockNoAir(x[1],y[0]) || yesBlockNoAir(x[2],y[0])) {
-        pos.y = (int)pos.y;
+        pos.y = (int)(pos.y);
         hitY = true;
       }
       if (yesBlockNoAir(x[0],y[1]) || yesBlockNoAir(x[1],y[1]) || yesBlockNoAir(x[2],y[1])) {
